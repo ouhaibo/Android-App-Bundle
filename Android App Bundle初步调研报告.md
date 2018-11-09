@@ -16,7 +16,7 @@ Android App Bundle是一个新的应用上传格式，它允许开发者将应�
 这是一个支持多个设备配置和两个动态特性的.aab文件。
 - base/,feature1/,feature2/：分别代表了工程中的base module(app module)以及各个dynamic feature module。每个dynamic feature module的名字分别在各自的manifest文件中指定。
 - BUNDLE-METADATA/：包含了提供给Google Play或者bundletool的一些信息用于生成APK文件。这些信息包括但不限于ProGuard映射表，完整的.dex文件列表等。这个文件的内容不会出现在最终下发给用户的APK文件中。
-- Module Protocol Buffer (*.pb) files：这些文件包含的信息用来向Google Play描述每个module中的内容。如BundleConfig.pb文件中包含了我们使用的bundletool的版本信息等；native.pb和resources.pb文件包含了对各自module中的资源和代码的描述信息用于帮助Google Play对我们的APK文件针对不同设备配置进行优化。
+- Module Protocol Buffer(*.pb) files：这些文件包含的信息用来向Google Play描述每个module中的内容。如BundleConfig.pb文件中包含了我们使用的bundletool的版本信息等；native.pb和resources.pb文件包含了对各自module中的资源和代码的描述信息用于帮助Google Play对我们的APK文件针对不同设备配置进行优化。
 - manifest/：各自module的manifest文件。
 - dex/:各自module的.dex文件。
 - res/,lib/,assets/：和普通APK文件中的res,lib,assets目录一样。
@@ -43,7 +43,14 @@ Google Play生成base apk的时候会把工程中所有module的manifest文件�
 开发者不用单独管理每个dynamic feature apk的版本，只需要在每次升级的时候在build.gradle文件中指定版本号和版本名，就像常规app一样。当你更新了你工程中的代码之后，你需要更新base module中的版本信息，然后构建一个全新的app bundle，再上传到Google Play，Google Play会基于新的app bunlde生成全新的一套APKs，如果一位之前安装过你的app的用户更新应用程序，那么他设备上所有安装过的APKs都会被替换成最新的APKs
 
 ### Build Dynamic Feature Modules
-
+1. 通过菜单栏创建一个Dynamic Feature Module.  
+![create_new_module](create_new_module.png)  
+2. 配置自己的Dynamic Feature Modules.    
+![configure_dynamic_feature_module](configure_dynamic_module.png)  
+ + Base application module就是我们的base module，直接默认的就是app module.
+ + 第二行的输入框指定一个module name。Specify a Module name.IDE使用这个名字来把这个dynamic feature module标识为子工程。在构建app bundle的时候，Gradle会在这个module的manifest文件中的<manifest split>特性中注入我们指定的module name.
+ + 第三行的输入框指定这个dynamic feature module的包名
+ + 第四行中指定的最低API级别要和base module中的一致
 
 
 
