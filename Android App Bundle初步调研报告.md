@@ -3,7 +3,7 @@
 ## Android App Bundle简介及其优势
 Android App Bundle是一个新的应用上传格式，它允许开发者将应用按照自己所支持的屏幕密度，地区语言，ABI以及各种功能feature进行细粒度的划分，使得用户可以按需下载应用的不同部分，从而减少应用的体积大小。
 ### Dynamic Delivery介绍
-一种新的基于.aab文件格式的应用分发模型。在这种模型下，_**由Google Play使用.aab文件中的代码和资源**_来为用户生成特定于设备的屏幕密度，ABI以及地区语言的应用程序（APK文件）以及动态特性APK文件。并且如果开发者提供了动态特性的话，用户可以在第一次使用该特性的时候再下载动态特性apk文件，避免在第一次安装的时候就下载整个应用程序的代码和资源。
+一种新的基于.aab文件格式的应用分发模型。在这种模型下，**_由Google Play使用.aab文件中的代码和资源_**来为用户生成特定于设备的屏幕密度，ABI以及地区语言的应用程序（APK文件）以及动态特性APK文件。并且如果开发者提供了动态特性的话，用户可以在第一次使用该特性的时候再下载动态特性apk文件，避免在第一次安装的时候就下载整个应用程序的代码和资源。
 #### Base APK
 这是用户第一次下载应用的时候需要下载的基础APK文件。它包含了应用程序最基本功能的代码和资源，其中的代码和资源可能被以后下载的动态特性apk中的代码所引用。Base APK的manifest文件中声明了整个应用程序（包括可能会有的dynamic feature apks）中所需要的四大组件，并且包含了应用程序的版本控制以及所有的权限声明。这个APK文件中的代码和资源全部来自我们工程中的app module(或者叫base module)。此APK文件由Google Play从我们提供的.aab文件中生成。
 
@@ -40,7 +40,10 @@ Google Play生成base apk的时候会把工程中所有module的manifest文件�
 上图的配置表示在language和density维度上按照app bundle支持的所有语言和屏幕密度分别生成不同的configuration apks，但是在abi这个维度上不在单独生成apk文件，而是全部打包在base apk或者dynamic feature apk中。
 
 ### Manage app updates
-开发者不用单独管理每个dynamic feature apk的版本，只需要在每次升级的时候在build.gradle文件中指定版本号和版本名，就想常规app一样。
+开发者不用单独管理每个dynamic feature apk的版本，只需要在每次升级的时候在build.gradle文件中指定版本号和版本名，就像常规app一样。当你更新了你工程中的代码之后，你需要更新base module中的版本信息，然后构建一个全新的app bundle，再上传到Google Play，Google Play会基于新的app bunlde生成全新的一套APKs，如果一位之前安装过你的app的用户更新应用程序，那么他设备上所有安装过的APKs都会被替换成最新的APKs
+
+### Build Dynamic Feature Modules
+
 
 
 
