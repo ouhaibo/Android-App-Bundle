@@ -1,5 +1,5 @@
 # Android App Bundle初步调研报告
-
+***
 ## Android App Bundle简介及其优势
 Android App Bundle是一个新的应用上传格式，它允许开发者将应用按照自己所支持的屏幕密度，地区语言，ABI以及各种功能feature进行细粒度的划分，使得用户可以按需下载应用的不同部分，从而减少应用的体积大小
 ### Dynamic Delivery介绍
@@ -10,7 +10,9 @@ Android App Bundle是一个新的应用上传格式，它允许开发者将应�
 #### Dynamic feature APKs
 动态特性APK。每一个这样的APK文件提供了所对应的动态特性所需要的代码和资源（也有可能会依赖Base APK中的代码和资源）。动态特性需要我们在IDE中显示地创建一个dynamic feature module，每一个这样的module都提供了对应功能的代码和资源。与Base APK同样地，当上传到Google Play之后，Google Play会从.aab文件中为每一个dynamic feature module分别生成一个dynamic feature apk
 #### Configuration APKs
+在以往每次下载应用程序的时候，无论用户的设备是什么配置，都会把应用程序针对所有配置的资源全部下载到设备上，造成了很多空间的浪费。在Dynamic Delivery下，Google Play从.aab文件中对每一种资源分别针对不同的设备配置都生成一个apk文件。比如对于drawable资源，针对不同的屏幕密度生成一系列的apk文件，每一个apk文件都包含了某一种屏幕密度下的所有drawable资源，叫做Density Configuration Split APKs。同理，对于ABI和Language都是一样的操作，分别叫做ABI Configuration Split APKs和Language Configuration APKs。当用户第一次下载应用的时候，除了下载一个Base APK文件以外，Goole play会根据用户设备的配置，分别从三个Split APKs中选择一个对应于设备配置的apk组成一个Configuration APKs。对于Base APK叫做Base Configuration APKs，对于Dynamic Feature APKs叫做Feature Configuration APKs。当用户切换了语言之后，会自动从Google Play下载一个新的Language Configuration APK。
 #### Android App Bundle文件格式
+
 
 
 
