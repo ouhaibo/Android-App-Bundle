@@ -100,17 +100,17 @@ android.buildTypes {
 
 ### 使用bundletool在本地测试应用
 不管是Gradle,Android Studio还是Google Play都是使用bundletool来构建一个app bundle或者从app bundle中生成各种APK文件。  
- 1. 首先我们要下载[bundletool](https://github.com/google/bundletool/releases)
- 2. 使用以下命令可以生成一套未签名的APKs
-  ```bash
-  bundletool build-apks --bundle=.../my_app.aab --output=.../my_app.apks
-  ```
- 3. 如果要生成一套签名的APKs使用如下命令：
-  ```bash
-  bundletool build-apks --bundle=.../my_app.aab --output=.../my_app.apks --ks=.../keystore.jks --ks-pass=password:xxxxxx --ks-key-alias=MyKeyAlias --key-pass=file:.../pwfile.pw --device-spec=spec_json
-  ```
-  跟普通app的签名其实差不太多。最终生成的是一个单独的.apks后缀名文件，其中包含了一系列base apk,dynamic feature apk,configuration apk文件，他们都是由我们前面的一系列配置所决定的，这个apks文件可以直接部署到设备上。另外，```--ks-pass```和```--key-pass```的值可以用字面值或者文件指定，分别加上```password:```和```file:```前缀就可以。```--device-spec```这个参数可以指定一个包含了特定设备的配置数据的json文件，使得bundletoole可以针对特定的设备生成特定的configuration apks。如果没有指定这个flag的话，我们可以加上```--connected-device```这个flag来让bundletool生成针对当前连接设备的configuration apks。如果这两个flag都没有指定的话，bundletool就会为你的应用程序能支持的所有配置的设备生成全量的APKs。  
- 4. 将生成的APK文件部署到设备。对于前面得到的.apks文件，我们可以用以下命令将其部署到已连 接的设备上：  
-  ```bash
-  bundletool install-apks --apks=.../my_app.apks
-  ```
+1. 首先我们要下载[bundletool](https://github.com/google/bundletool/releases)
+2. 使用以下命令可以生成一套未签名的APKs
+```bash
+bundletool build-apks --bundle=.../my_app.aab --output=.../my_app.apks
+```
+3. 如果要生成一套签名的APKs使用如下命令：
+```bash
+bundletool build-apks --bundle=.../my_app.aab --output=.../my_app.apks --ks=.../keystore.jks --ks-pass=password:xxxxxx --ks-key-alias=MyKeyAlias --key-pass=file:.../pwfile.pw --device-spec=spec_json
+```
+跟普通app的签名其实差不太多。最终生成的是一个单独的.apks后缀名文件，其中包含了一系列base apk,dynamic feature apk,configuration apk文件，他们都是由我们前面的一系列配置所决定的，这个apks文件可以直接部署到设备上。另外，```--ks-pass```和```--key-pass```的值可以用字面值或者文件指定，分别加上```password:```和```file:```前缀就可以。```--device-spec```这个参数可以指定一个包含了特定设备的配置数据的json文件，使得bundletoole可以针对特定的设备生成特定的configuration apks。如果没有指定这个flag的话，我们可以加上```--connected-device```这个flag来让bundletool生成针对当前连接设备的configuration apks。如果这两个flag都没有指定的话，bundletool就会为你的应用程序能支持的所有配置的设备生成全量的APKs。  
+4. 将生成的APK文件部署到设备。对于前面得到的.apks文件，我们可以用以下命令将其部署到已连 接的设备上：  
+```bash
+bundletool install-apks --apks=.../my_app.apks
+```
