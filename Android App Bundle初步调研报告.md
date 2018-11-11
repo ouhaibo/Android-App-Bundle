@@ -99,7 +99,7 @@ android.buildTypes {
 
 
 ### 使用bundletool在本地测试应用
-不管是Gradle,Android Studio还是Google Play都是使用bundletool来构建一个app bundle或者从app bundle中生成各种APK文件。  
+不管是Gradle,Android Studio还是Google Play都是使用bundletool来构建一个app bundle或者从app bundle中生成各种APK文件。
 1. 首先我们要下载[bundletool](https://github.com/google/bundletool/releases)
 2. 使用以下命令可以生成一套未签名的APKs
 ```bash
