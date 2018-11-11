@@ -47,23 +47,66 @@ Google Play生成base apk的时候会把工程中所有module的manifest文件�
 ![create_new_module](create_new_module.png)  
 2. 配置自己的Dynamic Feature Modules.    
 ![configure_dynamic_feature_module](configure_dynamic_module.png)  
- + Base application module就是我们的base module，直接默认的就是app module.
- + 第二行的输入框指定一个module name。Specify a Module name.IDE使用这个名字来把这个dynamic feature module标识为子工程。在构建app bundle的时候，Gradle会在这个module的manifest文件中的<manifest split>特性中注入我们指定的module name.
- + 第三行的输入框指定这个dynamic feature module的包名
- + 第四行中指定的最低API级别要和base module中的一致
+  + Base application module就是我们的base module，直接默认的就是app module.
+  + 第二行的输入框指定一个module name。Specify a Module name.IDE使用这个名字来把这个dynamic feature module标识为子工程。在构建app bundle的时候，Gradle会在这个module的manifest文件中的<manifest split>特性中注入我们指定的module name.
+  + 第三行的输入框指定这个dynamic feature module的包名
+  + 第四行中指定的最低API级别要和base module中的一致。  
+3. 配置On-Demand选项。  
+![configura_on_demand](on-demand-options.png)  
+  + 选中第一个On-Demand复选框，表示这个dynamic feature apk只有当用户需要的时候才会进行下载，并且在下载之前会先向用户进行确认；如果没有选中第一个复选框，则第二个Fusing将置灰不可用，并且这个dynamic feature apk将在第一次下载app的时候下发到用户的设备。
+  + 在后面的文本框中输入的名字将作为向用户展示的dynamic feature apk的名字，用户使用这个名字来辨认这个dynamic feature apk。
+  + 第二个复选框只有当第一个复选框被选中之后才可以被选择。如果用户的设备上的系统版本在API 21以下，则系统不会支持Dynamic Delivery。当用户选中了第一个复选框，在这个时候，如果Fusing这个复选框被选中，就表示这个dynamic feature module会和base module一起打包在初始的一套APK文件中，并且随着用户第一次安装app就下发到设备而不是当用户第一次使用到这个dynamic feature module的功能时才触发下载对应的dynamic feature apk文件；如果Fusing这个复选框没有被选中，则表示这个dynamic feature module不会和base module一起被打包在最初生成的一套APK文件中，也不会在第一次下载app的时候被下发到设备上，并且以后也不会下发到设备上.  
+  + On-Demand和Fusing这两个选项将会体现在dynamic feature module的manifest文件配置中。不需要我们手动配置，IDE会自动为我们在manifest中注入以下两个特性：  
+  ![on-demand-fusing-config](on-demand_fusing_manifest_config.png)  
+  中间的title属性表示我们之前创建dynamic feature module的时候设置的Module Title  
+4. 在以上操作完成后IDE会在base module的build.gradle文件中添加一下配置使得base module知道dynamic feature module的存在：  
+```Groovy
+android {
+  ...
+dynamicFeatures = [":dynamic_feature_1", ":some_funny_feature"]
+}
+```
+并且在dynamic feature module的build.gradle文件中添加以下配置分别表示应用dynamic-feature的gradle插件以及对base module的依赖:  
+```Groovy
+apply plugin: 'com.android.dynamic-feature'
+```
+```Groovy
+dependencies {
+    ...
+    implementation project(':app')
+}
+```
+还可以对dynamic feature module添加proguard rules文件指定自己的混淆规则：  
+```Groovy
+android.buildTypes {
+     ...
+     release {
+         ...
+         proguardFiles 'proguard-rules-dynamic-features.pro'
+     }
+}
+```
 
+### 从Android App Bundle部署，测试应用程序
+添加了对Dynamic Delivery的支持之后，我们可以从本地来测试我们的app bundle。
+ 1. 如果我们从IDE来部署我们的app，首先要生成一个app bundle。我们在Andorid Studio的Build下拉菜单中选择Generate Signed Bundle/APK，然后在弹出的对话框中选中Android App Bundle单选框：  
+ ![](generate_signed_bundle.png)  
+ 点击Next之后对app bundle进行签名就和以前普通app的流程一样，然后我们就可以得到一个.aab格式的app bundle文件  
 
+ 2. 得到.aab文件后就可以开始我们的部署流程。和普通的app没有太大的区别。只需要在Select Run/Debug  Configuration菜单中做出如下配置：  
+ ![deploy1](deploy_app_bundle_by_IDE.png)  
+ Deploy旁边的下拉框选择"APK from app bundle"，表示我们的APK由app bundle文件生成。在下面的Dynamic features to deploy中选择你这次部署app需要打包进去的dynamic feature module，如果都不选的话就需要在运行时，第一次使用的时候去下载，这种情况在本地无法模拟，需要将app bundle上传到Google Play,并加入Play Console的Internal Test Track才能测试
 
-## 从Android App Bundle部署，测试应用程序
 
 ### 使用bundletool在本地测试应用
-### 使用Google Play测试应用
-
-
-
-## 将Android App Bundle上传到Google Console
-
-
-
-
-## 使用Play Core Library下载dynamic feature module
+不管是Gradle,Android Studio还是Google Play都是使用bundletool来构建一个app bundle或者从app bundle中生成各种APK文件。  
+ 1. 首先我们要下载[bundletool](https://github.com/google/bundletool/releases)
+ 2. 使用以下命令可以生成一套未签名的APKs
+ ```bash
+ bundletool build-apks --bundle=.../my_app.aab --output=.../my_app.apks
+ ```
+ 3. 如果要生成一套签名的APKs使用如下命令：
+ ```bash
+ bundletool build-apks --bundle=.../my_app.aab --output=.../my_app.apks --ks=.../keystore.jks --ks-pass=password:xxxxxx --ks-key-alias=MyKeyAlias --key-pass=file:.../pwfile.pw --device-spec=spec_json
+ ```
+ 跟普通app的签名其实差不太多。其中```--ks-pass```和```--key-pass```的值可以用字面值或者文件指定，分别加上```password:```和```file:```前缀就可以。```--device-spec```这个参数可以指定一个包含了设备的配置数据的json文件，使得bundletoole可以针对特定的设备生成特定的configuration apks。如果没有指定这个flag的话，我们可以加上```--connected-device```这个flag来让bundletool生成针对当前连接设备的configuration apks。如果这两个flag都没有指定的话，bundletool就会为你的应用程序能支持的所有配置的设备生成全量的APKs。
